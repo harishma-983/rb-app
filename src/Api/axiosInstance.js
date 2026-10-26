@@ -1,0 +1,38 @@
+import axios from 'axios';
+
+const axiosInstance = axios.create({
+  baseURL:"https://rb-server-horv.onrender.com/",
+  timeout: 5000
+});
+
+// Global error handling
+axiosInstance.interceptors.response.use(
+  (response) => {
+    console.log("Response received");
+    return response;
+  },
+
+  (error) => {
+    if (error.response) {
+      const status = error.response.status;
+
+      if (status === 401) {
+        console.log("Unauthorized Access - Redirect to login page");
+      } else if (status === 404) {
+        console.log("API not found");
+      } else if (status === 500) {
+        console.log("Something went wrong. Try again later.");
+      } else {
+        console.log("HTTP Error:", status);
+      }
+    } else if (error.request) {
+      console.log("No response from server");
+    } else {
+      console.log("Error:", error.message);
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+export default axiosInstance;
